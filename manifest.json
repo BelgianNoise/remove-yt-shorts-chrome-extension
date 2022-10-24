@@ -1,7 +1,8 @@
 {
   "name": "Hide YT Shorts",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
+  "description": "Hide the annoying Youtube Shorts from your subscription feed for a less cluttered experience",
   "permissions": [ "activeTab", "storage" ],
   "icons": {"128": "128.png"},
   "content_scripts": [
