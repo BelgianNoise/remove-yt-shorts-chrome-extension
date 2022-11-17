@@ -4,10 +4,7 @@ let active = false;
 const addSlider = (div, slider) => {
 
 	const button = document.querySelector('div#title-container #subscribe-button');
-	if (button) {
-		if (localStorage['hide-yt-shorts'] === 'true') {
-      slider.click();
-    };
+	if (button && window.location.href.includes('feed/subscriptions')) {
 		button.parentNode.insertBefore(div, button);
 	} else {
 		setTimeout(() => addSlider(div, slider), 500);
@@ -38,14 +35,18 @@ span.addEventListener('click', () => {
   localStorage['hide-yt-shorts'] = active;
 });
 
+if (localStorage['hide-yt-shorts'] === 'true') {
+	span.click();
+};
+
 addSlider(div, span);
 	
 setInterval(() => {
 	const all = document.querySelectorAll('ytd-grid-video-renderer');
 	for ( var i = 0; i < all.length; i++) {
 		const c = all[i].querySelector('a#thumbnail');
-		const href = c.getAttribute('href');
-		if (href.includes('shorts')) {
+		const href = c?.getAttribute('href');
+		if (href?.includes('shorts')) {
 			all[i].style.display = active ? 'none' : 'block';
 		}
 	}
