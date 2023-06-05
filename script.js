@@ -43,11 +43,14 @@ addSlider(div, span);
 	
 setInterval(() => {
 	const all = document.querySelectorAll('ytd-grid-video-renderer');
-	for ( var i = 0; i < all.length; i++) {
-		const c = all[i].querySelector('a#thumbnail');
-		const href = c?.getAttribute('href');
-		if (href?.includes('shorts')) {
-			all[i].style.display = active ? 'none' : 'block';
+	for (const renderer of all) {
+		// only run code when the element is visible
+		if (renderer.style.display !== 'none') {
+			const c = renderer.querySelector('a#thumbnail');
+			const href = c?.getAttribute('href');
+			if (href && href.includes('shorts')) {
+				renderer.style.display = active ? 'none' : 'block';
+			}
 		}
 	}
 }, 1000);
