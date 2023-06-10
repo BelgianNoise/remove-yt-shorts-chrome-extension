@@ -98,9 +98,9 @@ const hideShortsOnHomeFeed = () => {
 }
 
 setInterval(() => {
-	if (window.location.pathname.includes('feed/subscriptions')) {
+	if (window.location.href.includes('feed/subscriptions')) {
 		hideShortsOnSubFeed();
-	} else if (window.location.pathname.includes('results?search_query=')) {
+	} else if (window.location.href.includes('results?search_query=')) {
 		hideShortsOnSearchPage();
 	} else if (window.location.pathname === '/') {
 		hideShortsOnHomeFeed();
