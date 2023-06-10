@@ -1,11 +1,24 @@
 
 let active = false;
 
+const moveSearchBar = () => {
+	const searchBar = document.querySelector('ytd-masthead#masthead #container #center ytd-searchbox#search');
+	const innerSearchBar = document.querySelector('ytd-masthead#masthead #container #center ytd-searchbox#search #search-form #container');
+	if (searchBar && innerSearchBar) {
+		searchBar.style.marginLeft = '0';
+		innerSearchBar.style.marginLeft = '0';
+	} else {
+		setTimeout(moveSearchBar(), 500);
+	}
+}
+
 const addSlider = (div, slider) => {
 
-	const button = document.querySelector('div#title-container #subscribe-button');
-	if (button && window.location.href.includes('feed/subscriptions')) {
-		button.parentNode.insertBefore(div, button);
+	const endOfMastHead = document.querySelector('ytd-masthead#masthead #container #end #buttons');
+	if (endOfMastHead) {
+		endOfMastHead.parentNode.insertBefore(div, endOfMastHead);
+		// Move searchbar a little to the left to allow for the slider
+		moveSearchBar();
 	} else {
 		setTimeout(() => addSlider(div, slider), 500);
 	}
@@ -15,10 +28,12 @@ const div = document.createElement('div');
 div.style.display = "flex";
 div.style.gap = '10px';
 div.style.alignItems = 'center';
+div.style.padding = "0 10px 0 20px";
 const p = document.createElement('p');
 p.innerText = 'Hide Shorts';
-p.style.fontSize = '1.6rem';
+p.style.fontSize = '1.3rem';
 p.style.lineHeight = '100%';
+p.style.color = '#eee';
 const label = document.createElement('label');
 label.classList.add('switch');
 const input = document.createElement('input');
@@ -40,15 +55,55 @@ if (localStorage['hide-yt-shorts'] === 'true') {
 };
 
 addSlider(div, span);
-	
-setInterval(() => {
-	const all = document.querySelectorAll('ytd-grid-video-renderer');
+
+const setVisibility = (el) => {
+	el.style.display = active ? 'none' : 'block';
+}
+
+const hideShortsOnSubFeed = () => {
+	const all = document.querySelectorAll('ytd-rich-item-renderer');
 	for (const renderer of all) {
 		const c = renderer.querySelector('a#thumbnail');
 		const href = c?.getAttribute('href');
 		if (href && href.includes('shorts')) {
-			renderer.style.display = active ? 'none' : 'block';
+			setVisibility(renderer);
 		}
 	}
+}
+const hideShortsOnSearchPage = () => {
+	const shortsPanels = document.querySelectorAll('#contents #contents ytd-reel-shelf-renderer');
+	for (const panel of shortsPanels) {
+		const title = panel.querySelector('#title-container #title');
+		if (title?.innerText.toLowerCase().includes('shorts')) {
+			setVisibility(panel);
+		}
+	}
+	const renderers = document.querySelectorAll('#contents #contents ytd-video-renderer');
+	for (const renderer of renderers) {
+		const c = renderer.querySelector('a#thumbnail');
+		const href = c?.getAttribute('href');
+		if (href?.includes('shorts')) {
+			setVisibility(renderer);
+		}
+	}
+}
+const hideShortsOnHomeFeed = () => {
+	const renderers = document.querySelectorAll('ytd-rich-section-renderer');
+	for (const renderer of renderers) {
+		const title = renderer.querySelector('#contents #rich-shelf-header #title-container #title');
+		if (title?.innerText.toLowerCase().includes('shorts')) {
+			setVisibility(renderer);
+		}
+	}
+}
+
+setInterval(() => {
+	if (window.location.pathname.includes('feed/subscriptions')) {
+		hideShortsOnSubFeed();
+	} else if (window.location.pathname.includes('results?search_query=')) {
+		hideShortsOnSearchPage();
+	} else if (window.location.pathname === '/') {
+		hideShortsOnHomeFeed();
+	}
 }, 1000);
-	
+
