@@ -59,6 +59,15 @@ addSlider(div, span);
 const setVisibility = (el) => {
 	el.style.display = active ? 'none' : 'block';
 }
+const toggleReelRenderers = () => {
+	const shortsPanels = document.querySelectorAll('#contents ytd-reel-shelf-renderer');
+	for (const panel of shortsPanels) {
+		const title = panel.querySelector('#title-container #title');
+		if (title?.innerText.toLowerCase().includes('shorts')) {
+			setVisibility(panel);
+		}
+	}
+}
 
 const hideShortsOnSubFeed = () => {
 	const all = document.querySelectorAll('ytd-rich-item-renderer');
@@ -71,13 +80,7 @@ const hideShortsOnSubFeed = () => {
 	}
 }
 const hideShortsOnSearchPage = () => {
-	const shortsPanels = document.querySelectorAll('#contents #contents ytd-reel-shelf-renderer');
-	for (const panel of shortsPanels) {
-		const title = panel.querySelector('#title-container #title');
-		if (title?.innerText.toLowerCase().includes('shorts')) {
-			setVisibility(panel);
-		}
-	}
+	toggleReelRenderers();
 	const renderers = document.querySelectorAll('#contents #contents ytd-video-renderer');
 	for (const renderer of renderers) {
 		const c = renderer.querySelector('a#thumbnail');
@@ -96,14 +99,19 @@ const hideShortsOnHomeFeed = () => {
 		}
 	}
 }
+const hideShortsOnWatchPage = () => {
+	toggleReelRenderers();
+}
 
 setInterval(() => {
-	if (window.location.href.includes('feed/subscriptions')) {
+	if (window.location.pathname === '/feed/subscriptions') {
 		hideShortsOnSubFeed();
 	} else if (window.location.href.includes('results?search_query=')) {
 		hideShortsOnSearchPage();
 	} else if (window.location.pathname === '/') {
 		hideShortsOnHomeFeed();
+	} else if (window.location.pathname === '/watch') {
+		hideShortsOnWatchPage();
 	}
 }, 1000);
 
